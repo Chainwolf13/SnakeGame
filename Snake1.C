@@ -23,7 +23,7 @@
 
 char* getSnakeSize (int num);        //updates snakeSize (snake doesn't grow in this version so we won't actually use this)
 void getDirection(int *directionX , int *directionY);           //Want to use pointers so we can modify data in the address of memory
-void showBorder();
+void showBorder(int CurrentX);
 void displayTrophy();              // displays Trophy on the screen
 
 
@@ -34,8 +34,8 @@ int main ()
 
 
     // Global var 'stdscr' is created by the call to 'initscr()'
-    int max_y = 0, max_x =  0;
-    getmaxyx(stdscr, max_y, max_x);
+    int max_y = 100, max_x =  100;
+  //  getmaxyx(stdscr, max_y, max_x);
 
     //Snake Movement
     int CurrentX = 1 , CurrentY = 1; 
@@ -49,10 +49,15 @@ int main ()
 
     while (1) {                 //Game loop (infinite loop until break)
      clear();                   // Clear the screen of all previously-printed characters
+     
+                                /* BORDER FOR SNAKE PIT */       
+    //Prints border then print snake position then clear 
+    showBorder(CurrentX);
+
 
     getDirection(&directionX , &directionY);     // Pass in the value of pointers
 
-    /* MOVES THE SNAKE */
+                                 /* MOVES THE SNAKE */
     CurrentX += directionX;
     CurrentY += directionY;
 
@@ -97,17 +102,29 @@ void getDirection( int *directionX , int *directionY){
         default:
         break;
     }
-    /* MOVES THE SNAKE*/
-    // next_x = CurrentX + direction;
-    // next_y = CurrentY + direction;
-    
-    // CurrentX += directionX;
-    // CurrentY += directionY;
-    // mvprintw(CurrentY, CurrentX, "o"); //prints our snake at the current xy position
 
 }
 
-void showBorder(){
+void showBorder(int CurrentX){
+    int max_y = LINES - 1, max_x =  COLS -1;
+
+    //TOP BORDER
+        mvprintw(0, 1, "+");
+    for(int i = 2; i < max_x - 2; i++){     //Start at 1 so we can see visible border from terminal (could start at 0 if we want) and place "+" there
+        mvprintw(0, i, "-");                    //Every COL we place a wall "-" 
+    }   mvprintw(0, max_x - 1, "+");            //Last COL add "+" border
+
+    //SIDE BORDER
+    for(int i = 1; i< max_y - 1; i++){
+        mvprintw(i, 0, "|");                    //Every row we place a wall "|" on left side
+        mvprintw(i, max_x - 1, "|");            //Every row we place a wall "|" on right side
+    }
+
+    //Bottom BORDER
+        mvprintw(max_y -1,0, "+");
+    for(int i = 2; i < max_x - 2; i++){     //Start at 1 so we can see visible border from terminal (could start at 0 if we want) and place "+" there
+        mvprintw(max_y, i, "-");                    //Every COL we place a wall "-" 
+    }   mvprintw(max_y, max_x - 1, "+");            //Last COL add "+" border
 
 }
 

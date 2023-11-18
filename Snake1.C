@@ -26,7 +26,11 @@
 char* getSnakeSize (int num);        //updates snakeSize (snake doesn't grow in this version so we won't actually use this)
 void getDirection(int *directionX , int *directionY);           //Want to use pointers so we can modify data in the address of memory
 void showBorder(int oldX, int oldY,int CurrentX,int CurrentY);
+void drawBorder();
 void displayTrophy();              // displays Trophy on the screen
+void updateSnake(int* snakeX, int* snakeY, int snakeSize, int directionX, int directionY);
+void drawSnake(int* snakeX, int* snakeY, int snakeSize);
+
 
 int stringlen(char* str)
 {
@@ -46,7 +50,19 @@ int main ()
     int max_y = 100, max_x =  100;
     int ch;
 
+    // Snake properties
      char* snake;
+     int snakeSize = 5;
+    int* snakeX = (int*)malloc(snakeSize * sizeof(int));
+    int* snakeY = (int*)malloc(snakeSize * sizeof(int));
+
+        // Initialize snake position
+    for (int i = 0; i < snakeSize; i++) {
+        snakeX[i] = 5 + i;  // Initial X position   all snake segments moves to the right
+        snakeY[i] = 5;      // Initial Y position
+    }
+
+
     //Snake Movement
     int CurrentX = 1 , CurrentY = 1; 
     int directionX = 1 , directionY = 0;
@@ -58,27 +74,27 @@ int main ()
     nodelay(stdscr, TRUE);      // Sets getch() to non-blocking (we don't wait for user input)
 
     // Draw Border
-    showBorder(-1,-1,CurrentX,CurrentY);
+    //showBorder(-1,-1,CurrentX,CurrentY);
 
     while (1) {                 //Game loop (infinite loop until break)
-    // clear();                   // Clearing screen will cause shaking effect so instead we'll clear the snake with empty string " "
-  //  erase();
+   //  clear();                   // Clearing screen will cause shaking effect so instead we'll clear the snake with empty string " "
+    erase();
 
  // Clear the old position of the snake
         //mvprintw(CurrentX-1, CurrentY-1, " ");  //go to that position and erase the snake
-         for (int i = 1; i < 5; i++) {          //
-        mvprintw(CurrentY, CurrentX - i, " ");
-     }
+    //      for (int i = 1; i < 5; i++) {          //
+    //     mvprintw(CurrentY, CurrentX - i, " ");
+    //  }
     
-    snake = getSnakeSize(5);
-    //char* head = snake[strlen(snake) - 1];
+    // snake = getSnakeSize(5);
+    // //char* head = snake[strlen(snake) - 1];
 
-                                 /* MOVES THE SNAKE'S POSITION */
-    int oldX = CurrentX;
-    int oldY = CurrentY;
-    getDirection(&directionX , &directionY);     // Pass in the value of pointers
-    CurrentX += directionX;
-    CurrentY += directionY;
+    //                              /* MOVES THE SNAKE'S POSITION */
+    // int oldX = CurrentX;
+    // int oldY = CurrentY;
+     getDirection(&directionX , &directionY);     // Pass in the value of pointers
+    // CurrentX += directionX;
+    // CurrentY += directionY;
 
                                 /* Redraw Snake and Border  */
          // Draw the snake at its new position
@@ -86,11 +102,24 @@ int main ()
     // for (int i = 1; i < 5; i++) {
     //     mvprintw(CurrentY, CurrentX - i, "x");
     // }
-        mvprintw(CurrentY, CurrentX, snake);
-    for (int i = 1; i < 5; i++) {
-        mvprintw(CurrentY, CurrentX - i, snake);
-    }
-    showBorder(oldX,oldY,CurrentX,CurrentY);
+    //     mvprintw(CurrentY, CurrentX, snake);
+    // for (int i = 1; i < 5; i++) {
+    //     mvprintw(CurrentY, CurrentX - i, snake);
+    // }
+    //  showBorder(oldX,oldY,CurrentX,CurrentY);
+
+
+
+    
+            // Update snake position
+        updateSnake(snakeX, snakeY, snakeSize, directionX, directionY);
+
+        // Draw snake
+        drawSnake(snakeX, snakeY, snakeSize);
+
+        // Draw border
+        drawBorder();
+    //drawBorder();
 
     refresh();
     usleep(DELAY); // Calls sleep function to display movement at a nice pace (Shorter delay between movements)
@@ -102,7 +131,12 @@ int main ()
 
 //Gets the arrow direction of snake
 void getDirection( int *directionX , int *directionY){
-        int ch = getch();
+    int ch = getch();
+
+    if (ch == ERR) {
+        // No input, set a default value
+        ch = -1;
+    }
 
         switch (ch) {
         case KEY_UP:            //to go up decrease y
@@ -137,13 +171,6 @@ void getDirection( int *directionX , int *directionY){
 void showBorder(int oldX, int oldY,int CurrentX,int CurrentY ){
     int max_y = LINES - 1, max_x =  COLS -1;
 
-    // // Clear the old position of the snake
-    // if (oldX != -1 && oldY != -1) {
-    //     mvprintw(oldY, oldX, " ");  //go to that position and erase the snake
-    //      for (int i = 1; i < 5; i++) {
-    //     mvprintw(oldY-i, oldX - i, " ");
-    //  }
-    // }
 
     //TOP BORDER
         mvprintw(0, 1, "+");
@@ -166,6 +193,20 @@ void showBorder(int oldX, int oldY,int CurrentX,int CurrentY ){
   //  mvprintw(CurrentY, CurrentX, "X"); //prints our snake at the current xy position
 }
 
+void drawBorder() {
+    int max_y, max_x;
+    getmaxyx(stdscr, max_y, max_x);
+
+    // Draw the border
+    for (int i = 0; i < max_y; i++) {
+        for (int j = 0; j < max_x; j++) {
+            if (i == 0 || i == max_y - 1 || j == 0 || j == max_x - 1) {
+                mvprintw(i, j, "+");
+            }
+        }
+    }
+}
+
 char* getSnakeSize(int size){
   
    char* snake = (char*) malloc(size + 1);       //create space in memory for snake   , +1 for null terminator
@@ -186,4 +227,32 @@ char* getSnakeSize(int size){
     snake[size] = '\0';
 
     return snake;
+}
+// Function to update snake position
+void updateSnake(int* snakeX, int* snakeY, int snakeSize, int directionX, int directionY) {
+    // Update the tail
+    for (int i = snakeSize - 1; i > 0; i--) {   //Makes the tail follow the head
+        snakeX[i] = snakeX[i - 1];  //from last segment to 2nd segement copies the position of segment before it to get closer to the head
+        snakeY[i] = snakeY[i - 1];
+    }
+
+    // Update the head
+    snakeX[0] += directionX;        //head is updated based on current movement, if snake moves right then direction is (directionX=1 , directionY =0);
+    snakeY[0] += directionY;
+}
+
+// Function to draw the snake
+void drawSnake(int* snakeX, int* snakeY, int snakeSize) {
+ //For a snake of the same characters
+    // for (int i = 0; i < snakeSize; i++) {
+    //     mvprintw(snakeY[i], snakeX[i], "x");
+    // }
+
+        // Draw the head
+    mvprintw(snakeY[0], snakeX[0], "@");
+
+    // Draw the body
+    for (int i = 1; i < snakeSize; i++) {
+        mvprintw(snakeY[i], snakeX[i], "x");
+    }
 }

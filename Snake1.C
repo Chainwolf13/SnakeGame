@@ -23,7 +23,7 @@
 
 char* getSnakeSize (int num);        //updates snakeSize (snake doesn't grow in this version so we won't actually use this)
 void getDirection(int *directionX , int *directionY);           //Want to use pointers so we can modify data in the address of memory
-void showBorder(int CurrentX);
+void showBorder(int oldX, int oldY,int CurrentX,int CurrentY);
 void displayTrophy();              // displays Trophy on the screen
 
 
@@ -35,7 +35,7 @@ int main ()
 
     // Global var 'stdscr' is created by the call to 'initscr()'
     int max_y = 100, max_x =  100;
-  //  getmaxyx(stdscr, max_y, max_x);
+    int ch;
 
     //Snake Movement
     int CurrentX = 1 , CurrentY = 1; 
@@ -47,23 +47,29 @@ int main ()
     keypad(stdscr, TRUE);       // enables working with the arrow keys
     nodelay(stdscr, TRUE);      // Sets getch() to non-blocking (we don't wait for user input)
 
+    // Draw Border
+    showBorder(-1,-1,CurrentX,CurrentY);
+
     while (1) {                 //Game loop (infinite loop until break)
-     clear();                   // Clear the screen of all previously-printed characters
+     //clear();                   // Clearing screen will cause shaking effect so instead we'll clear the snake with empty string " "
      
                                 /* BORDER FOR SNAKE PIT */       
-    //Prints border then print snake position then clear 
-    showBorder(CurrentX);
+
+    mvprintw(CurrentY, CurrentX, "    "); //Only clear snake's position
 
 
+                                 /* MOVES THE SNAKE'S POSITION */
+    int oldX = CurrentX;
+    int oldY = CurrentY;
     getDirection(&directionX , &directionY);     // Pass in the value of pointers
-
-                                 /* MOVES THE SNAKE */
     CurrentX += directionX;
     CurrentY += directionY;
 
+                                /* Redraw Snake and Border  */
     mvprintw(CurrentY, CurrentX, "XoooZ"); //prints our snake at the current xy position
+    showBorder(oldX,oldY,CurrentX,CurrentY);
+
     refresh();
-    
     usleep(DELAY); // Calls sleep function to display movement at a nice pace (Shorter delay between movements)
 
     }
@@ -105,8 +111,13 @@ void getDirection( int *directionX , int *directionY){
 
 }
 
-void showBorder(int CurrentX){
+void showBorder(int oldX, int oldY,int CurrentX,int CurrentY ){
     int max_y = LINES - 1, max_x =  COLS -1;
+
+    // Clear the old position of the snake
+    if (oldX != -1 && oldY != -1) {
+        mvprintw(oldY, oldX, " ");
+    }
 
     //TOP BORDER
         mvprintw(0, 1, "+");
@@ -126,6 +137,7 @@ void showBorder(int CurrentX){
         mvprintw(max_y, i, "-");                    //Every COL we place a wall "-" 
     }   mvprintw(max_y, max_x - 1, "+");            //Last COL add "+" border
 
+    mvprintw(CurrentY, CurrentX, "XoooZ"); //prints our snake at the current xy position
 }
 
 char* getSnakeSize(int size){

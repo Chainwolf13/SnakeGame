@@ -52,11 +52,6 @@ int main ()
 
     while (1) {                 //Game loop (infinite loop until break)
      //clear();                   // Clearing screen will cause shaking effect so instead we'll clear the snake with empty string " "
-     
-                                /* BORDER FOR SNAKE PIT */       
-
-    mvprintw(CurrentY, CurrentX, "    "); //Only clear snake's position
-
 
                                  /* MOVES THE SNAKE'S POSITION */
     int oldX = CurrentX;
@@ -66,7 +61,7 @@ int main ()
     CurrentY += directionY;
 
                                 /* Redraw Snake and Border  */
-    mvprintw(CurrentY, CurrentX, "XoooZ"); //prints our snake at the current xy position
+  //  mvprintw(CurrentY, CurrentX, "XoooZ"); //prints our snake at the current xy position
     showBorder(oldX,oldY,CurrentX,CurrentY);
 
     refresh();
@@ -116,7 +111,7 @@ void showBorder(int oldX, int oldY,int CurrentX,int CurrentY ){
 
     // Clear the old position of the snake
     if (oldX != -1 && oldY != -1) {
-        mvprintw(oldY, oldX, " ");
+        mvprintw(oldY, oldX, " ");  //go to that position and erase the snake
     }
 
     //TOP BORDER
@@ -137,7 +132,7 @@ void showBorder(int oldX, int oldY,int CurrentX,int CurrentY ){
         mvprintw(max_y, i, "-");                    //Every COL we place a wall "-" 
     }   mvprintw(max_y, max_x - 1, "+");            //Last COL add "+" border
 
-    mvprintw(CurrentY, CurrentX, "XoooZ"); //prints our snake at the current xy position
+    mvprintw(CurrentY, CurrentX, "X"); //prints our snake at the current xy position
 }
 
 char* getSnakeSize(int size){

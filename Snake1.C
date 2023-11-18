@@ -14,6 +14,8 @@
 *           Jahmaro Gordon 11/17/2023
 */
 
+#include <cstdlib>
+#include <cstring>
 #include <stdio.h>
 #include <curses.h>
 #include <unistd.h>
@@ -26,6 +28,13 @@ void getDirection(int *directionX , int *directionY);           //Want to use po
 void showBorder(int oldX, int oldY,int CurrentX,int CurrentY);
 void displayTrophy();              // displays Trophy on the screen
 
+int stringlen(char* str)
+{
+int len = 0;
+while (* (str+len) != '\0'){len++;}
+return len;
+} 
+
 
 int main ()
 {
@@ -37,6 +46,7 @@ int main ()
     int max_y = 100, max_x =  100;
     int ch;
 
+     char* snake;
     //Snake Movement
     int CurrentX = 1 , CurrentY = 1; 
     int directionX = 1 , directionY = 0;
@@ -51,7 +61,17 @@ int main ()
     showBorder(-1,-1,CurrentX,CurrentY);
 
     while (1) {                 //Game loop (infinite loop until break)
-     //clear();                   // Clearing screen will cause shaking effect so instead we'll clear the snake with empty string " "
+    // clear();                   // Clearing screen will cause shaking effect so instead we'll clear the snake with empty string " "
+  //  erase();
+
+ // Clear the old position of the snake
+        //mvprintw(CurrentX-1, CurrentY-1, " ");  //go to that position and erase the snake
+         for (int i = 1; i < 5; i++) {          //
+        mvprintw(CurrentY, CurrentX - i, " ");
+     }
+    
+    snake = getSnakeSize(5);
+    //char* head = snake[strlen(snake) - 1];
 
                                  /* MOVES THE SNAKE'S POSITION */
     int oldX = CurrentX;
@@ -61,7 +81,15 @@ int main ()
     CurrentY += directionY;
 
                                 /* Redraw Snake and Border  */
-  //  mvprintw(CurrentY, CurrentX, "XoooZ"); //prints our snake at the current xy position
+         // Draw the snake at its new position
+    // mvprintw(CurrentY, CurrentX, "@");
+    // for (int i = 1; i < 5; i++) {
+    //     mvprintw(CurrentY, CurrentX - i, "x");
+    // }
+        mvprintw(CurrentY, CurrentX, snake);
+    for (int i = 1; i < 5; i++) {
+        mvprintw(CurrentY, CurrentX - i, snake);
+    }
     showBorder(oldX,oldY,CurrentX,CurrentY);
 
     refresh();
@@ -109,10 +137,13 @@ void getDirection( int *directionX , int *directionY){
 void showBorder(int oldX, int oldY,int CurrentX,int CurrentY ){
     int max_y = LINES - 1, max_x =  COLS -1;
 
-    // Clear the old position of the snake
-    if (oldX != -1 && oldY != -1) {
-        mvprintw(oldY, oldX, " ");  //go to that position and erase the snake
-    }
+    // // Clear the old position of the snake
+    // if (oldX != -1 && oldY != -1) {
+    //     mvprintw(oldY, oldX, " ");  //go to that position and erase the snake
+    //      for (int i = 1; i < 5; i++) {
+    //     mvprintw(oldY-i, oldX - i, " ");
+    //  }
+    // }
 
     //TOP BORDER
         mvprintw(0, 1, "+");
@@ -132,22 +163,27 @@ void showBorder(int oldX, int oldY,int CurrentX,int CurrentY ){
         mvprintw(max_y, i, "-");                    //Every COL we place a wall "-" 
     }   mvprintw(max_y, max_x - 1, "+");            //Last COL add "+" border
 
-    mvprintw(CurrentY, CurrentX, "X"); //prints our snake at the current xy position
+  //  mvprintw(CurrentY, CurrentX, "X"); //prints our snake at the current xy position
 }
 
 char* getSnakeSize(int size){
-    // size = 5;
-    // char snakeBody[size];
+  
+   char* snake = (char*) malloc(size + 1);       //create space in memory for snake   , +1 for null terminator
 
-    // //loop size amount of times
-     char* snake;
-    // char head = 'X';
-    // char body = 'o';
-    // char tail = 'Z';
+    //Since Snake always has a head,body and tail minimum size will be 3
+    char head = '@';
+    char body = 'x';
+    //char tail = 'Z';
 
-    // if (condition) {
-    // statements
-    // }    
+    // Set the head
+    snake[0] = head;
+    // Set the body
+    for(int i = 1; i<size;i++){  // i = Current snake of head and body (2). 2<5; add more to "body" to the snake  for(int i = strlen(snake); i<size;i++){
+    snake[i] = body;
+    }
+
+    //Add null terminator
+    snake[size] = '\0';
 
     return snake;
 }

@@ -20,8 +20,8 @@
 
 #define DELAY 30000
 
-void getSnakeSize(int);        //updates snakeSize (snake doesn't grow in this version so we won't actually use this)
-void getDirection();           //gets direction (takes in an integer and returns the ascii char)
+char* getSnakeSize (int num);        //updates snakeSize (snake doesn't grow in this version so we won't actually use this)
+void getDirection(int Currentx , int Currenty);           //gets direction (takes in an integer and returns the ascii char)
 void showBorder();
 void displayTrophy();              // displays Trophy on the screen
 
@@ -30,59 +30,86 @@ int main ()
 {
     /* Setup for snake game */
     initscr();                  // initialize the curses Library 
-    clear();                    // clear screen 
+   // clear();                    // clear screen 
     curs_set(FALSE);            // hide the cursor
     noecho();                   // do not echo the user input to the screen
     keypad(stdscr, TRUE);       // enables working with the arrow keys
-    move(0, 0);                 //Top left of screen
+  //  move(0, 0);                 //Top left of screen
     //addstr("press any key...");
 
     // Global var 'stdscr' is created by the call to 'initscr()'
-    int max_y = 0, max_x = 0;
+    int max_y = 100, max_x =  100;
     getmaxyx(stdscr, max_y, max_x);
 
     //Snake Movement
-    int x = 0 , y= 0;
-    int next_x =0;
-    int direction = 1;
+    static int CurrentX = 0 , CurrentY= 0;
+    // int next_x =0;
+    // int next_y =0;
+    // int direction = 1;
 
     while (1) {                 //Game loop (infinite loop until break)
     clear();  // Clear the screen of all previously-printed characters
 
-    //mvprintw(y, x, "o"); //print our ball at the current xy position
-
+    getDirection(CurrentX,CurrentY);
     refresh();
     
     usleep(DELAY); // Calls sleep function to display movement at a nice pace (Shorter delay between movements)
 
 
-        // if next x direction is going to hit the screen border Then You lose !!! and exit program
-        if (next_x >= max_x || next_x < 0) {  
-        //direction*=-1; //swap directions
-        endwin();
-        }
+        // // if next x direction is going to hit the screen border Then You lose !!! and exit program
+        // if (next_x >= max_x || next_x < 0) {  
+        // //direction*=-1; //swap directions
+        // endwin();
+        // }
 
     }
+    endwin();
 }
 
-void getDirection(){
+//Gets the arrow direction of snake
+void getDirection(int CurrentX, int CurrentY){
+        // Global var 'stdscr' is created by the call to 'initscr()'
+    // int max_y = 100, max_x = 100;
+    // getmaxyx(stdscr, max_y, max_x);
+    
+        //Snake Movement
+   //default values for direction
+   int next_x = CurrentX; 
+   int next_y = CurrentY;   
+   //positive for going up or right , negative for going left or down
+   int directionX = 1;
+   int directionY = 1;
+    
+    
         int ch = getch();
         char buf[100];
-        move(0, 0);
+      //  move(0, 0);
 
         switch (ch) {
         case KEY_UP:
-            addstr("You pressed the UP arrow                     ");
-            break;
+        if (directionY == -1) { //if snake is already going DOWN we swap directions
+            directionY*=-1;
+        }else {
+            directionY = 1;     //else we continue going UP
+        }break; //BREAK
         case KEY_DOWN:
-            addstr("You pressed the DOWN arrow                     ");
-            break;
+        if (directionY == 1) { //if snake is already going UP we swap directions
+            directionY *= -1;
+        }else {
+            directionY = -1;     //else we continue going DOWN
+        }break; //BREAK
         case KEY_LEFT:
-            addstr("You pressed the LEFT arrow                     ");
-            break;   
+        if (directionX == 1) { //if snake is already going RIGHT we swap directions
+            directionY *= -1;
+        }else {
+            directionY = -1;     //else we continue going LEFT
+        }break; // BREAK
         case KEY_RIGHT:
-            addstr("You pressed the RIGHT arrow                     ");
-            break;       
+        if (directionX == -1) { //if snake is already going LEFT we swap directions
+            directionX *= -1;
+        }else {
+            directionX = 1;     //else we continue going RIGHT
+        }break; // BREAK       
         case KEY_ENTER:
             addstr("You pressed the ENTER arrow                     ");
             break;
@@ -90,12 +117,37 @@ void getDirection(){
         case 'X':      
             endwin();   // close curses
         default:
-        sprintf(buf, "You pressed a \"%c\" key, ASCII code %d...", (char)ch, ch);
-        addstr(buf);
+        // sprintf(buf, "You pressed a \"%c\" key, ASCII code %d...", (char)ch, ch);
+        // addstr(buf);
         break;
     }
+    /* MOVES THE SNAKE*/
+    // next_x = CurrentX + direction;
+    // next_y = CurrentY + direction;
+    
+    CurrentX += directionX;
+    CurrentY += directionY;
+    mvprintw(CurrentY, CurrentX, "o"); //prints our snake at the current xy position
+
 }
 
 void showBorder(){
 
+}
+
+char* getSnakeSize(int size){
+    // size = 5;
+    // char snakeBody[size];
+
+    // //loop size amount of times
+     char* snake;
+    // char head = 'X';
+    // char body = 'o';
+    // char tail = 'Z';
+
+    // if (condition) {
+    // statements
+    // }    
+
+    return snake;
 }

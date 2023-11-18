@@ -18,6 +18,7 @@
 #include <cstring>
 #include <stdio.h>
 #include <curses.h>
+#include <ncurses.h>
 #include <unistd.h>
 
 #define DELAY 300000
@@ -33,9 +34,7 @@ void drawSnake(int* snakeX, int* snakeY, int snakeSize);
  
 int main ()
 {
-    /* Setup for snake game */
-
-
+                                                                        /* Setup for snake game */
 
     // Global var 'stdscr' is created by the call to 'initscr()'
     int max_y = 100, max_x =  100;
@@ -56,6 +55,10 @@ int main ()
     //Snake Movement
     int CurrentX = 1 , CurrentY = 1; 
     int directionX = 1 , directionY = 0;
+
+    //Snake and Background Color
+    start_color();
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);   //Green Snake, black background
 
     initscr();                  // initialize the curses Library 
     curs_set(FALSE);            // hide the cursor
@@ -78,6 +81,9 @@ int main ()
             // Update snake position
         updateSnake(snakeX, snakeY, snakeSize, directionX, directionY);
 
+        //Set Colors
+        attron(COLOR_PAIR(1));
+
         // Draw snake and Border
         erase();
         drawSnake(snakeX, snakeY, snakeSize);
@@ -86,6 +92,8 @@ int main ()
 
 
     refresh();
+    //     //Turn off color pair
+    // attroff(COLOR_PAIR(1));
 
     }
     endwin();
@@ -177,11 +185,17 @@ void updateSnake(int* snakeX, int* snakeY, int snakeSize, int directionX, int di
 
 // Function to draw the snake
 void drawSnake(int* snakeX, int* snakeY, int snakeSize) {
-        // Draw the head
+    //Set color for snake
+    attron(COLOR_PAIR(1));
+
+    // Draw the head
     mvprintw(snakeY[0], snakeX[0], "@");
 
     // Draw the body
     for (int i = 1; i < snakeSize; i++) {
         mvprintw(snakeY[i], snakeX[i], "x");
     }
+
+    //Turn off color pair
+    attroff(COLOR_PAIR(1));
 }
